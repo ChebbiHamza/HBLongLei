@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday Long Lei 🎂</title>
+<style>
+  body{background:#fff0f5;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;
+       font-family:'Arial',sans-serif;overflow:hidden;text-align:center;touch-action:manipulation;transition:background .6s}
+  h1{color:#d63384;font-size:2rem;margin:16px;padding:0 10px}
+  .emoji{font-size:6rem;animation:bounce 1.2s infinite}
+  @keyframes bounce{50%{transform:translateY(-14px)}}
+  .buttons{display:flex;justify-content:center;gap:20px;margin-top:20px;min-height:100px;align-items:center}
+  button{padding:12px 25px;font-size:1.2rem;border-radius:12px;border:none;cursor:pointer;font-weight:bold}
+  #yesBtn{background:#ff4d6d;color:#fff;z-index:1000}
+  #noBtn{background:#888;color:#fff;z-index:999;transition:all .2s ease}
+  #success{display:none}
+  .slideshow{position:relative;width:280px;height:280px;margin:0 auto 10px}
+  .slideshow img,.slideshow .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:20px;
+       border:6px solid #fff;box-shadow:0 10px 25px rgba(214,51,132,.3);opacity:0;transition:opacity .8s;box-sizing:border-box}
+  .slideshow .active{opacity:1}
+  .ph{display:flex;align-items:center;justify-content:center;font-size:5rem;background:#ffd6e5}
+  .msg{color:#d63384;max-width:320px;margin:0 auto;line-height:1.5;padding:0 12px}
+  canvas{position:fixed;inset:0;pointer-events:none;z-index:2000}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<div id="main">
+  <div class="emoji">🎁</div>
+  <h1>It's your birthday, Long Lei! 🎂<br>Ready for your surprise?</h1>
+  <div class="buttons">
+    <button id="yesBtn" onclick="celebrate()">YES!</button>
+    <button id="noBtn" onmouseover="dodge()" onclick="dodge()" ontouchstart="dodge()">Not yet</button>
+  </div>
+</div>
+
+<div id="success">
+  <div class="slideshow" id="album"></div>
+  <h1 style="font-size:2.3rem;color:#ff4d6d">Happy Birthday Long Lei! 🎉</h1>
+  <p class="msg">Another year of you, and the world is a little brighter for it.
+    I'm so lucky to have you in my life. I hope today is full of smiles, cake and everything you love.</p>
+    <p class="msg" style="font-size:1.6rem;font-weight:bold;margin-top:14px">我爱你 ❤️<br><span style="font-size:1.2rem">Wo ai ni</span></p>
+</div>
+
+<script>
+  // Put your photo file names here (same folder as this file). Missing ones show a placeholder.
+  const photos = ["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg"];
+
+  let yesSize = 1.2;
+  function dodge(){
+    const no = document.getElementById('noBtn'), yes = document.getElementById('yesBtn');
+    const pad = 50;
+    const x = Math.random()*(innerWidth-no.offsetWidth-pad)+pad/2;
+    const y = Math.random()*(innerHeight-no.offsetHeight-pad)+pad/2;
+    no.style.position='fixed'; no.style.left=x+'px'; no.style.top=y+'px';
+    yesSize += 0.2;
+    yes.style.fontSize = yesSize+'rem';
+    yes.style.padding = (yesSize*10)+'px '+(yesSize*20)+'px';
+  }
+
+  function celebrate(){
+    document.getElementById('main').style.display='none';
+    document.getElementById('success').style.display='block';
+    document.body.style.background='#ffd1e0';
+    buildAlbum(); confetti();
+  }
+
+  function buildAlbum(){
+    const album = document.getElementById('album');
+    photos.forEach(src=>{
+      const img = new Image();
+      img.src = src;
+      img.onerror = ()=>{ const d=document.createElement('div'); d.className='ph'; d.textContent='💖'; img.replaceWith(d); };
+      album.appendChild(img);
+    });
+    const items = () => album.children;
+    let i = 0;
+    items()[0].classList.add('active');
+    setInterval(()=>{
+      items()[i].classList.remove('active');
+      i = (i+1)%items().length;
+      items()[i].classList.add('active');
+    }, 2500);
+  }
+
+  function confetti(){
+    const c = document.getElementById('fx'), ctx = c.getContext('2d');
+    c.width = innerWidth; c.height = innerHeight;
+    const colors = ['#ff4d6d','#ffb703','#8ecae6','#d63384','#90be6d','#fff'];
+    const bits = Array.from({length:160},()=>({
+      x:Math.random()*c.width, y:-Math.random()*c.height,
+      s:Math.random()*8+4, v:Math.random()*3+2, d:Math.random()*2-1,
+      col:colors[Math.floor(Math.random()*colors.length)]
+    }));
+    let frames = 0;
+    (function draw(){
+      ctx.clearRect(0,0,c.width,c.height);
+      bits.forEach(b=>{ b.y+=b.v; b.x+=b.d; ctx.fillStyle=b.col; ctx.fillRect(b.x,b.y,b.s,b.s*0.6); });
+      if(++frames<450) requestAnimationFrame(draw); else ctx.clearRect(0,0,c.width,c.height);
+    })();
+  }
+</script>
+</body>
+</html>
